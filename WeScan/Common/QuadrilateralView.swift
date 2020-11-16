@@ -26,7 +26,6 @@ final class QuadrilateralView: UIView {
         layer.lineWidth = 1.0
         layer.opacity = 1.0
         layer.isHidden = true
-        
         return layer
     }()
     
@@ -120,6 +119,7 @@ final class QuadrilateralView: UIView {
         setupCornerViews()
         setupConstraints()
         quadView.layer.addSublayer(quadLayer)
+        quadView.layer.addSublayer(quadBorderLayer)
     }
     
     private func setupConstraints() {
@@ -324,3 +324,4 @@ final class QuadrilateralView: UIView {
         }
     }
 }
+
