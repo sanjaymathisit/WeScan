@@ -30,6 +30,16 @@ final class QuadrilateralView: UIView {
         return layer
     }()
     
+    private let quadBorderLayer: CAShapeLayer = {
+        let layer = CAShapeLayer()
+        layer.strokeColor = UIColor.white.cgColor
+        layer.lineWidth = 3.0
+        layer.opacity = 1.0
+        layer.fillColor = UIColor.clear.cgColor
+        layer.isHidden = true
+        return layer
+    }()
+    
     /// We want the corner views to be displayed under the outline of the quadrilateral.
     /// Because of that, we need the quadrilateral to be drawn on a UIView above them.
     private let quadView: UIView = {
@@ -152,27 +162,27 @@ final class QuadrilateralView: UIView {
         self.quad = quad
         drawQuad(quad, animated: animated)
         if editable {
-            cornerViews(hidden: false)
+            cornerViews(hidden: true)
             layoutCornerViews(forQuad: quad)
         }
     }
     
     private func drawQuad(_ quad: Quadrilateral, animated: Bool) {
         var path = quad.path
-        
+        var borderPath = quad.borderPath
         if editable {
             path = path.reversing()
             let rectPath = UIBezierPath(rect: bounds)
             path.append(rectPath)
         }
-        
         if animated == true {
             let pathAnimation = CABasicAnimation(keyPath: "path")
             pathAnimation.duration = 0.2
             quadLayer.add(pathAnimation, forKey: "path")
         }
-        
         quadLayer.path = path.cgPath
+        quadBorderLayer.path = borderPath.cgPath
+        quadBorderLayer.isHidden = false
         quadLayer.isHidden = false
     }
     
@@ -283,14 +293,21 @@ final class QuadrilateralView: UIView {
         switch corner {
         case .topLeft:
             quad.topLeft = position
+            quad.topRight.y = position.y
+            quad.bottomLeft.x = position.x
         case .topRight:
             quad.topRight = position
+            quad.topLeft.y = position.y
+            quad.bottomRight.x = position.x
         case .bottomRight:
             quad.bottomRight = position
+            quad.bottomLeft.y = position.y
+            quad.topRight.x = position.x
         case .bottomLeft:
             quad.bottomLeft = position
+            quad.bottomRight.y = position.y
+            quad.topLeft.x = position.x
         }
-        
         return quad
     }
     

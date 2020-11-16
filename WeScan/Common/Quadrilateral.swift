@@ -40,6 +40,35 @@ public struct Quadrilateral: Transformable {
 
         return path
     }
+    var borderPath: UIBezierPath {
+        //UIColor.white.setStroke()
+        let segLength : CGFloat = 30
+        let cornerSize : CGFloat = 5
+        //let lineWidth : CGFloat = 10
+        let borderPath = UIBezierPath()
+        //borderPath.lineWidth = lineWidth
+         // draw top left corner
+        borderPath.move(to: CGPoint(x:topLeft.x, y:topLeft.y + segLength + cornerSize))
+        borderPath.addLine(to: CGPoint(x:topLeft.x, y:topLeft.y))
+        borderPath.move(to: CGPoint(x: topLeft.x, y: topLeft.y))
+        borderPath.addLine(to:CGPoint(x:topLeft.x + segLength + cornerSize, y:topLeft.y))
+        //draw top right corner
+        borderPath.move(to: CGPoint(x:topRight.x, y:topRight.y + segLength + cornerSize))
+        borderPath.addLine(to: CGPoint(x:topRight.x, y:topRight.y))
+        borderPath.move(to: CGPoint(x: topRight.x, y: topRight.y))
+        borderPath.addLine(to:CGPoint(x:topRight.x - segLength - cornerSize, y:topRight.y))
+        //draw bottom left
+        borderPath.move(to: CGPoint(x: bottomLeft.x, y: bottomLeft.y - segLength - cornerSize ))
+        borderPath.addLine(to: CGPoint(x: bottomLeft.x, y: bottomLeft.y))
+        borderPath.move(to: CGPoint(x: bottomLeft.x, y: bottomLeft.y))
+        borderPath.addLine(to: CGPoint(x: bottomLeft.x + cornerSize + segLength , y: bottomLeft.y ))
+        //draw bottom right
+        borderPath.move(to: CGPoint(x: bottomRight.x, y: bottomRight.y - segLength - cornerSize))
+        borderPath.addLine(to: CGPoint(x: bottomRight.x , y: bottomRight.y))
+        borderPath.move(to: CGPoint(x: bottomRight.x, y: bottomRight.y))
+        borderPath.addLine(to: CGPoint(x: bottomRight.x - cornerSize - segLength, y: bottomRight.y))
+        return borderPath
+    }
 
     /// The perimeter of the Quadrilateral
     var perimeter: Double {
