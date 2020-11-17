@@ -164,7 +164,6 @@ public final class EditImageViewController: UIViewController {
         let imageSize = image.size
         let size = CGSize(width: quadViewWidthConstraint.constant, height: quadViewHeightConstraint.constant)
         let imageFrame = CGRect(origin: quadView.frame.origin, size: size)
-        
         let scaleTransform = CGAffineTransform.scaleTransform(forSize: imageSize, aspectFillInSize: imageFrame.size)
         let transforms = [scaleTransform]
         let transformedQuad = quad.applyTransforms(transforms)
@@ -186,9 +185,7 @@ public final class EditImageViewController: UIViewController {
         let topRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: image.size.height / 3.0)
         let bottomRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
         let bottomLeft = CGPoint(x: image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
-        
         let quad = Quadrilateral(topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft)
-        
         return quad
     }
 
