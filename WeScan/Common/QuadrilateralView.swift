@@ -174,9 +174,6 @@ final class QuadrilateralView: UIView {
             path = path.reversing()
             let rectPath = UIBezierPath(rect: bounds)
             path.append(rectPath)
-            borderPath = borderPath.reversing()
-            let borderRectPath = UIBezierPath(rect: bounds)
-            borderPath.append(borderRectPath)
         }
         if animated == true {
             let pathAnimation = CABasicAnimation(keyPath: "path")
