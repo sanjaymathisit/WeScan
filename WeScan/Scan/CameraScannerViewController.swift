@@ -23,7 +23,8 @@ public final class CameraScannerViewController: UIViewController {
     /// The status of auto scan.
     public var isAutoScanEnabled: Bool = CaptureSession.current.isAutoScanEnabled {
         didSet {
-            CaptureSession.current.isAutoScanEnabled = isAutoScanEnabled
+            //CaptureSession.current.isAutoScanEnabled = isAutoScanEnabled
+            CaptureSession.current.isAutoScanEnabled = false
         }
     }
 
@@ -57,7 +58,6 @@ public final class CameraScannerViewController: UIViewController {
     
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         videoPreviewLayer.frame = view.layer.bounds
     }
     
