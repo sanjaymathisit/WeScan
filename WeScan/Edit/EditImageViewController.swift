@@ -164,13 +164,13 @@ public final class EditImageViewController: UIViewController {
         let imageSize = image.size
         let size = CGSize(width: quadViewWidthConstraint.constant, height: quadViewHeightConstraint.constant)
         let imageFrame = CGRect(origin: quadView.frame.origin, size: size)
+        
         let scaleTransform = CGAffineTransform.scaleTransform(forSize: imageSize, aspectFillInSize: imageFrame.size)
         let transforms = [scaleTransform]
         let transformedQuad = quad.applyTransforms(transforms)
-        
-        quadView.drawQuadrilateral(quad: transformedQuad, animated: false)
+        quad.reorganize()
+        quadView.drawQuadrilateral(quad: transformedQuad, animated: false, corners: false)
     }
-    
     /// The quadView should be lined up on top of the actual image displayed by the imageView.
     /// Since there is no way to know the size of that image before run time, we adjust the constraints to make sure that the quadView is on top of the displayed image.
     private func adjustQuadViewConstraints() {
@@ -185,7 +185,9 @@ public final class EditImageViewController: UIViewController {
         let topRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: image.size.height / 3.0)
         let bottomRight = CGPoint(x: 2.0 * image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
         let bottomLeft = CGPoint(x: image.size.width / 3.0, y: 2.0 * image.size.height / 3.0)
+        
         let quad = Quadrilateral(topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft)
+        
         return quad
     }
 
@@ -199,3 +201,4 @@ public final class EditImageViewController: UIViewController {
         return quad
     }
 }
+

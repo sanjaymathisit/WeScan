@@ -58,7 +58,7 @@ final class QuadrilateralView: UIView {
             guard let quad = quad else {
                 return
             }
-            drawQuad(quad, animated: false)
+            drawQuad(quad, animated: false, corners: false)
             layoutCornerViews(forQuad: quad)
         }
     }
@@ -139,16 +139,23 @@ final class QuadrilateralView: UIView {
         addSubview(bottomRightCornerView)
         addSubview(bottomLeftCornerView)
     }
-    
     override public func layoutSubviews() {
         super.layoutSubviews()
         guard quadLayer.frame != bounds else {
             return
         }
-        
         quadLayer.frame = bounds
-        if let quad = quad {
-            drawQuadrilateral(quad: quad, animated: false)
+        if var quad = quad {
+            quad.reorganize()
+            drawQuadrilateral(quad: quad, animated: false, corners: false)
+        }
+        guard quadBorderLayer.frame != bounds else {
+            return
+        }
+        quadBorderLayer.frame = bounds
+        if var quad = quad {
+            quad.reorganize()
+            drawQuadrilateral(quad: quad, animated: false, corners: false)
         }
     }
     
@@ -158,31 +165,35 @@ final class QuadrilateralView: UIView {
     ///
     /// - Parameters:
     ///   - quad: The quadrilateral to draw on the view. It should be in the coordinates of the current `QuadrilateralView` instance.
-    func drawQuadrilateral(quad: Quadrilateral, animated: Bool) {
+    func drawQuadrilateral(quad: Quadrilateral, animated: Bool, corners: Bool) {
         self.quad = quad
-        drawQuad(quad, animated: animated)
+        drawQuad(quad, animated: animated, corners: corners)
         if editable {
             cornerViews(hidden: true)
-            //layoutCornerViews(forQuad: quad)
+            layoutCornerViews(forQuad: quad)
         }
     }
     
-    private func drawQuad(_ quad: Quadrilateral, animated: Bool) {
+    private func drawQuad(_ quad: Quadrilateral, animated: Bool, corners: Bool) {
         var path = quad.path
         var borderPath = quad.borderPath
         if editable {
             path = path.reversing()
             let rectPath = UIBezierPath(rect: bounds)
             path.append(rectPath)
+            borderPath = borderPath.reversing()
+            let rectBorderPath = UIBezierPath(rect: bounds)
+            borderPath.append(rectBorderPath)
         }
         if animated == true {
             let pathAnimation = CABasicAnimation(keyPath: "path")
             pathAnimation.duration = 0.2
             quadLayer.add(pathAnimation, forKey: "path")
+            quadBorderLayer.add(pathAnimation, forKey: "borderPath")
         }
         quadLayer.path = path.cgPath
         quadBorderLayer.path = borderPath.cgPath
-        quadBorderLayer.isHidden = false
+        quadBorderLayer.isHidden = corners
         quadLayer.isHidden = false
     }
     
@@ -195,7 +206,9 @@ final class QuadrilateralView: UIView {
     
     func removeQuadrilateral() {
         quadLayer.path = nil
+        quadBorderLayer.path = nil
         quadLayer.isHidden = true
+        quadBorderLayer.isHidden = true
     }
     
     // MARK: - Actions
@@ -211,7 +224,7 @@ final class QuadrilateralView: UIView {
         let updatedQuad = update(quad, withPosition: validPoint, forCorner: cornerView.position)
         
         self.quad = updatedQuad
-        drawQuad(updatedQuad, animated: false)
+        drawQuad(updatedQuad, animated: false, corners: false)
     }
     
     func highlightCornerAtPosition(position: CornerPosition, with image: UIImage) {
@@ -324,4 +337,3 @@ final class QuadrilateralView: UIView {
         }
     }
 }
-

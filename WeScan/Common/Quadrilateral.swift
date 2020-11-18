@@ -66,6 +66,7 @@ public struct Quadrilateral: Transformable {
         borderPath.addLine(to: CGPoint(x: bottomRight.x , y: bottomRight.y))
         borderPath.move(to: CGPoint(x: bottomRight.x, y: bottomRight.y))
         borderPath.addLine(to: CGPoint(x: bottomRight.x - cornerSize - segLength, y: bottomRight.y))
+        borderPath.close()
         return borderPath
     }
 
@@ -247,3 +248,4 @@ extension Quadrilateral: Equatable {
         return lhs.topLeft == rhs.topLeft && lhs.topRight == rhs.topRight && lhs.bottomRight == rhs.bottomRight && lhs.bottomLeft == rhs.bottomLeft
     }
 }
+

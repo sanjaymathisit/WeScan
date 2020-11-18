@@ -175,12 +175,11 @@ final class EditScanViewController: UIViewController {
     private func displayQuad() {
         let imageSize = image.size
         let imageFrame = CGRect(origin: quadView.frame.origin, size: CGSize(width: quadViewWidthConstraint.constant, height: quadViewHeightConstraint.constant))
-        
+        quad.reorganize()
         let scaleTransform = CGAffineTransform.scaleTransform(forSize: imageSize, aspectFillInSize: imageFrame.size)
         let transforms = [scaleTransform]
         let transformedQuad = quad.applyTransforms(transforms)
-        
-        quadView.drawQuadrilateral(quad: transformedQuad, animated: false)
+        quadView.drawQuadrilateral(quad: transformedQuad, animated: false, corners: false)
     }
     
     /// The quadView should be lined up on top of the actual image displayed by the imageView.
