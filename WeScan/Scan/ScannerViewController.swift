@@ -26,7 +26,6 @@ public final class ScannerViewController: UIViewController {
     
     /// The original bar style that was set by the host app
     private var originalBarStyle: UIBarStyle?
-    
     private lazy var shutterButton: ShutterButton = {
         let button = ShutterButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -53,8 +52,7 @@ public final class ScannerViewController: UIViewController {
     private lazy var flashButton: UIBarButtonItem = {
         let image = UIImage(systemName: "bolt.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let button = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(toggleFlash))
-        button.tintColor = .white
-        
+        button.tintColor = .lightGray
         return button
     }()
     
@@ -69,7 +67,6 @@ public final class ScannerViewController: UIViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
         title = nil
         view.backgroundColor = UIColor.black
         
@@ -130,12 +127,12 @@ public final class ScannerViewController: UIViewController {
     
     private func setupNavigationBar() {
         navigationItem.setLeftBarButton(flashButton, animated: false)
-        navigationItem.setRightBarButton(autoScanButton, animated: false)
+        //navigationItem.setRightBarButton(autoScanButton, animated: false)
         
         if UIImagePickerController.isFlashAvailable(for: .rear) == false {
             let flashOffImage = UIImage(systemName: "bolt.slash.fill", named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
             flashButton.image = flashOffImage
-            flashButton.tintColor = UIColor.lightGray
+            flashButton.tintColor = UIColor.black
         }
     }
     
@@ -252,11 +249,11 @@ public final class ScannerViewController: UIViewController {
         case .on:
             flashEnabled = true
             flashButton.image = flashImage
-            flashButton.tintColor = .yellow
+            flashButton.tintColor = .orange
         case .off:
             flashEnabled = false
             flashButton.image = flashImage
-            flashButton.tintColor = .white
+            flashButton.tintColor = .lightGray
         case .unknown, .unavailable:
             flashEnabled = false
             flashButton.image = flashOffImage
@@ -289,36 +286,37 @@ extension ScannerViewController: RectangleDetectionDelegateProtocol {
     
     func captureSessionManager(_ captureSessionManager: CaptureSessionManager, didCapturePicture picture: UIImage, withQuad quad: Quadrilateral?) {
         activityIndicator.stopAnimating()
-        
-        let editVC = EditScanViewController(image: picture, quad: quad)
-        navigationController?.pushViewController(editVC, animated: false)
-        
+        //let editVC = EditScanViewController(image: picture, quad: quad)
+        //navigationController?.pushViewController(editVC, animated: false)
+        guard let imageScannerController = navigationController as? ImageScannerController else { return }
+        let topLeft = CGPoint(x: picture.size.width * 0.05, y: picture.size.height * 0.05)
+        let topRight = CGPoint(x: picture.size.width * 0.95, y: picture.size.height * 0.05)
+        let bottomRight = CGPoint(x: picture.size.width * 0.95, y: picture.size.height * 0.95)
+        let bottomLeft = CGPoint(x: picture.size.width * 0.05, y: picture.size.height * 0.95)
+        var results = ImageScannerResults(detectedRectangle: quad ?? Quadrilateral(topLeft: topLeft, topRight: topRight, bottomRight: bottomRight, bottomLeft: bottomLeft), originalScan: ImageScannerScan(image: picture), croppedScan: ImageScannerScan(image: picture), enhancedScan: ImageScannerScan(image: picture))
+        imageScannerController.imageScannerDelegate?.imageScannerController(imageScannerController, didFinishScanningWithResults: results)
         shutterButton.isUserInteractionEnabled = true
     }
-    
     func captureSessionManager(_ captureSessionManager: CaptureSessionManager, didDetectQuad quad: Quadrilateral?, _ imageSize: CGSize) {
-        guard let quad = quad else {
+        guard var quad = quad else {
             // If no quad has been detected, we remove the currently displayed on on the quadView.
             quadView.removeQuadrilateral()
             return
         }
-        
+        quad.reorganize()
         let portraitImageSize = CGSize(width: imageSize.height, height: imageSize.width)
-        
         let scaleTransform = CGAffineTransform.scaleTransform(forSize: portraitImageSize, aspectFillInSize: quadView.bounds.size)
         let scaledImageSize = imageSize.applying(scaleTransform)
-        
+        quad.reorganize()
         let rotationTransform = CGAffineTransform(rotationAngle: CGFloat.pi / 2.0)
-
         let imageBounds = CGRect(origin: .zero, size: scaledImageSize).applying(rotationTransform)
-
+        quad.reorganize()
         let translationTransform = CGAffineTransform.translateTransform(fromCenterOfRect: imageBounds, toCenterOfRect: quadView.bounds)
-        
-        let transforms = [scaleTransform, rotationTransform, translationTransform]
-        
+        quad.reorganize()
+        let transforms = [scaleTransform,rotationTransform,translationTransform]
         let transformedQuad = quad.applyTransforms(transforms)
-        
-        quadView.drawQuadrilateral(quad: transformedQuad, animated: true)
+        quad.reorganize()
+        //quadView.drawQuadrilateral(quad: transformedQuad, animated: false, corners: true)
     }
-    
 }
+

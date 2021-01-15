@@ -8,7 +8,6 @@
 
 import UIKit
 import AVFoundation
-
 /// A set of methods that your delegate object must implement to interact with the image scanner interface.
 public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     
@@ -19,7 +18,6 @@ public protocol ImageScannerControllerDelegate: NSObjectProtocol {
     ///   - results: The results of the user scanning with the camera.
     /// - Discussion: Your delegate's implementation of this method should dismiss the image scanner controller.
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults)
-    
     /// Tells the delegate that the user cancelled the scan operation.
     ///
     /// - Parameters:
@@ -44,7 +42,7 @@ public final class ImageScannerController: UINavigationController {
     
     /// The object that acts as the delegate of the `ImageScannerController`.
     public weak var imageScannerDelegate: ImageScannerControllerDelegate?
-    
+
     // MARK: - Life Cycle
     
     /// A black UIView, used to quickly display a black screen when the shutter button is presseed.
@@ -62,9 +60,7 @@ public final class ImageScannerController: UINavigationController {
     
     public required init(image: UIImage? = nil, delegate: ImageScannerControllerDelegate? = nil) {
         super.init(rootViewController: ScannerViewController())
-        
         self.imageScannerDelegate = delegate
-        
         if #available(iOS 13.0, *) {
             navigationBar.tintColor = .label
         } else {
@@ -73,7 +69,6 @@ public final class ImageScannerController: UINavigationController {
         navigationBar.isTranslucent = false
         self.view.addSubview(blackFlashView)
         setupConstraints()
-        
         // If an image was passed in by the host app (e.g. picked from the photo library), use it instead of the document scanner.
         if let image = image {
             detect(image: image) { [weak self] detectedQuad in
@@ -83,7 +78,6 @@ public final class ImageScannerController: UINavigationController {
             }
         }
     }
-
     override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -216,3 +210,4 @@ public struct ImageScannerResults {
         self.doesUserPreferEnhancedScan = doesUserPreferEnhancedScan
     }
 }
+
